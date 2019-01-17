@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" 
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:context="http://www.springframework.org/schema/context" 
+		xsi:schemaLocation="http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+		http://www.springframework.org/schema/context 
+		http://www.springframework.org/schema/context/spring-context-3.2.xsd
+		 ">
+		 <context:property-placeholder location="classpath:/jdbc.properties"/>
+		 
+		 <bean id="dataSource1" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		 	<property name="driverClassName" value="${driverName}"/>
+		 	<property name="url" value="${url}"/>
+		 	<property name="username" value="${name}"/>
+		 	<property name="password" value="${password}"/>
+		 </bean>
+		 
+		 <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		 	<property name="dataSource" ref="dataSource1"/>
+		 	<property name="configLocation" value="classpath:mybatis-config.xml"/>
+		 </bean>
+		
+		<bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+			<constructor-arg ref="sqlSessionFactory"></constructor-arg>
+		</bean>
+		
+		<bean id="adminService" class="com.service.impl.AdminServiceImpl">
+			<property name="sqlSession" ref="sqlSession"/>
+		</bean>
+		
+		<bean id="loginAction" class="com.action.LoginAction">
+			<property name="as" ref="adminService"/>
+		</bean>
+	
+		<!--Book  -->
+		<bean id="goodsService" class="com.service.impl.GoodsServiceImpl">
+			<property name="sqlSession" ref="sqlSession"/>
+		</bean>
+		<bean id="queryBooksAction" class="com.action.QueryBooksAction">
+			<property name="gs" ref="goodsService"/>
+		</bean>
+		
+		<bean id="updateStatus" class="com.action.UpdateStatus">
+			<property name="gs" ref="goodsService"/>
+		</bean>
+		
+		<bean id="selectGoodsById" class="com.action.SelectByIdAction">
+			<property name="gs" ref="goodsService"/>
+		</bean>
+		
+		<bean id="getCount" class="com.action.GetCount">
+			<property name="gs" ref="goodsService"/>
+		</bean>
+		
+		<bean id="updateGoods" class="com.action.UpdateGoods">
+			<property name="gs" ref="goodsService"/>
+		</bean>
+		<bean id="insertGoods" class="com.action.InsertBookAction">
+			<property name="gs" ref="goodsService"/>
+		</bean>
+		<!--user  -->
+		<bean id="userService" class="com.service.impl.UserServiceImpl">
+			<property name="sqlSession" ref="sqlSession"/>
+		</bean>
+		<bean id="selectUsers" class="com.action.SelectUsersAction">
+			<property name="us" ref="userService"/>
+		</bean>
+		<bean id="updateUserStatus" class="com.action.UpdateUserStatusAction">
+			<property name="us" ref="userService"/>
+		</bean>
+		<bean id="downMessage" class="com.action.DownMessage">
+		  <property name="us" ref="userService"/>
+		</bean>
+		<!-- category -->
+		<bean id="categoryService" class="com.service.impl.CategoryServiceImpl">
+			<property name="sqlSession" ref="sqlSession"/>
+		</bean>
+		<bean id="selectTwoCategoty" class="com.action.SelelctTowCategoryAction">
+			<property name="sc" ref="categoryService"/>
+		</bean>
+		<bean id="selectCategoryByid" class="com.action.SelectCategoryByParentid">
+			<property name="cs" ref="categoryService"/>
+		</bean>
+		<bean id="selectCategory" class="com.action.SelectCategoriesAction">
+			<property name="cs" ref="categoryService"/>
+		</bean>
+		<bean id="insertCategory" class="com.action.InsertCategoryAction">
+		 <property name="cs" ref="categoryService"/>
+		</bean>
+		<bean id="showCategory" class="com.action.ShowCategory">
+			<property name="cs" ref="categoryService"/>
+		</bean>
+		<bean id="selectCategoryByID" class="com.action.ShowCategoryByID">
+			<property name="cs" ref="categoryService"/>
+		</bean>
+		<bean id="showCategories" class="com.action.SelectFatherCategories">
+			<property name="cs" ref="categoryService"/>
+		</bean>
+		<bean id="updateCategory" class="com.action.UpdateCategory">
+			<property name="cs" ref="categoryService"/>
+		</bean>
+		<bean id="deleteCategory" class="com.action.DeleteCategoryById">
+			<property name="cs" ref="categoryService"/>
+		</bean>
+		
+		<!--Order  -->
+		<bean id="orderService" class="com.service.impl.OrderServiceImpl">
+			<property name="sqlSession" ref="sqlSession"/>
+		</bean>
+		<bean id="selectAllOrders" class="com.action.SelectAllOrders">
+			<property name="os" ref="orderService"/>
+		</bean>
+		<bean id="selectOrderByOrderId" class="com.action.SelectOrderByOrderId">
+			<property name="os" ref="orderService"/>
+		</bean>
+		<bean id="deleteOrderById" class="com.action.DeleteOrdersByIds">
+		  <property name="os" ref="orderService"/>
+		</bean>
+		</beans>

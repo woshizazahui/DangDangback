@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+<!-- 设置存放文件的临时文件夹 -->
+	<constant name="struts.multipart.saveDir" value="/productImages"></constant>
+<!--配置Struts2文件不用重启服务器  -->
+	<!-- <constant name="struts.devMode" value="true"></constant> -->
+<!-- 解决乱码 -->
+	<constant name="struts.i18n.encoding" value="UTF-8"></constant>
+<!-- 产生验证码并验证验证码 -->
+	<package name="code" extends="struts-default" namespace="/code">
+		<action name="drawImage" class="com.action.DrawImageAction"></action>
+		<action name="identityCode" class="com.action.IdentityCodeAction"></action>	
+	</package>    
+	
+	
+	<!--Admin  -->
+	<package name="admin" extends="struts-default" namespace="/admin">
+		<global-results>
+			<result name="error">/error.jsp</result>
+		</global-results>
+		<action name="login" class="loginAction">
+			<result name="ordinary">
+				/admin/page/main/main.jsp
+			</result>
+			<result name="super">
+				/admin/page/main/main.jsp
+			</result>
+		</action>
+		<action name="exit" class="com.action.QuitAction">
+			<result name="success">/admin/page/main/index.jsp</result>
+		</action>
+	</package>
+	
+	<!--Goods  -->
+	<package name="goods" extends="struts-default" namespace="/goods">
+		<action name="queryBooks" class="queryBooksAction">
+			<result name="success">/admin/page/main/right.jsp</result>
+		</action>
+		<action name="updateStatus" class="updateStatus">
+			<result name="success" type="redirectAction">
+				queryBooks
+			</result>
+		</action>
+		<action name="selectGoods" class="selectGoodsById">
+			<result name="success">/admin/page/main/updatebookThis.jsp</result>
+		</action>
+		<action name="getCount" class="getCount">
+			<result name="success">/index.jsp</result>
+		</action>
+		<action name="updateGoods" class="updateGoods">
+				<result name="success" type="redirectAction">queryBooks</result>
+		</action>
+		<action name="insertGoods" class="insertGoods">
+			<result name="success" type="redirectAction">
+			queryBooks
+			</result>
+		</action>
+	</package >	
+	<!-- user -->
+	<package name="user" extends="struts-default" namespace="/user" >
+		<action name="showUsers" class="selectUsers">
+			<result name="success">/admin/page/main/userright.jsp</result>
+		</action>
+		<action name="updateStatus" class="updateUserStatus">
+			<result name="success" type="redirectAction">showUsers</result>
+		</action>
+		<action name="sendmessage" class="com.action.SendMessage"></action>
+		<action name="downMessage" class="downMessage">
+			<result name="success" type="redirectAction">showUsers</result>
+		</action>
+		<action name="chat" class="com.action.Chat"></action>
+	</package>
+	<!--category  -->
+	<package name="category" extends="struts-default" namespace="/category">
+		<action name="selectAllCategorys" class="selectTwoCategoty" >
+		</action>
+		<action name="selectAllByParentid" class="selectCategoryByid"></action>
+		<action name="selectAllCategories" class="selectCategory"></action>
+		<action name="showCategorys" class="showCategory">
+			<result name="success">/admin/page/main/categoryright.jsp</result>
+		</action>
+		<action name="insertCategory" class="insertCategory">
+			<result name="success" type="redirectAction">showCategorys</result>
+		</action>
+		<action name="showCategoryByID" class="selectCategoryByID">
+			<result name="success" >/admin/page/main/updatecategoryThis.jsp</result>
+		</action>
+		<action name="showFatherCategory" class="showCategories">
+		</action>
+		<action name="updateCategoryById" class="updateCategory">
+			<result name="success" type="redirectAction">showCategorys</result>
+		</action>
+		<action name="deleteCategory" class="deleteCategory">
+			<result name="success" type="redirectAction">showCategorys</result>
+		</action>
+	</package> 
+	<!-- order -->
+	<package name="order" extends="struts-default" namespace="/order">
+		<action name="selectAllOrder" class="selectAllOrders">
+			<result name="success">/admin/page/main/queryorder.jsp</result>
+		</action>
+		<action name="selectOrderByOrderId" class="selectOrderByOrderId">
+				<result name="success">/admin/page/main/queryorder.jsp</result>
+		</action>
+		<action name="deleteOrderByOrderId" class="deleteOrderById">
+				<result name="success" type="redirectAction">selectAllOrder</result>
+		</action>
+	</package>
+</struts>

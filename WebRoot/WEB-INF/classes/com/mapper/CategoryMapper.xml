@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dao.CategoryMapper" >
+  <resultMap id="BaseResultMap" type="com.entity.Category" >
+    <id column="ID" property="id" jdbcType="DECIMAL" />
+    <result column="CATEGORY" property="category" jdbcType="VARCHAR" />
+    <result column="PARENTID" property="parentid" jdbcType="DECIMAL" />
+    <result column="STORE" property="store" jdbcType="DECIMAL" />
+  </resultMap>
+  <resultMap id="TwoCategory" type="com.entity.TwoCategory">
+  	<result column="id" property="id"/>
+  	<result column="category" property="category"/>
+  	<result column="parentId" property="parentId"/>
+  	<result column="parentCategory" property="parentCategory"/>
+  </resultMap>
+  <resultMap id="FatherCategory" type="com.entity.CategoryNew" >
+    <id column="ID" property="id" jdbcType="DECIMAL" />
+    <result column="CATEGORY" property="category" jdbcType="VARCHAR" />
+    <!--这里把父id传过去 -->
+    <collection property="childCategory" column="id" select="com.dao.CategoryMapper.selectSonCategoryByid"/>
+</resultMap>
+
+  <resultMap id="SonCategory" type="com.entity.SonCategory" >
+    <id column="ID" property="id" jdbcType="DECIMAL" />
+    <result column="CATEGORY" property="category" jdbcType="VARCHAR" />
+  </resultMap>
+  <!-- <resultMap id="FatherCategory" type="com.entity.FatherCategory">
+  	<id column="ID" property="id" jdbcType="DECIMAL" />
+    <result column="CATEGORY" property="category" jdbcType="VARCHAR" />
+  </resultMap> -->
+  <sql id="Base_Column_List" >
+    ID, CATEGORY, PARENTID, STORE
+  </sql>
+  <select id="selectFatherCategories" resultMap="BaseResultMap">
+  	select * from t_goodscategory where parentid=0
+  </select>
+  <select id="selectCategory" resultMap="FatherCategory" parameterType="java.lang.Integer">
+  	select id,category
+    from t_goodscategory
+    where id=#{parentid}  
+  </select>
+  <select id="getMaxPage" resultType="java.lang.Integer">
+  	select count(1) from t_goodscategory
+  </select>
+  <!-- 查询所有的类别信息 -->
+  <select id="selectCategories" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+  	<![CDATA[
+  		select a.* from 
+      (select s.*,rownum rn from
+      (select * from t_goodscategory) s 
+      where rownum<#{pageIndex}*5) a
+      where rn>(#{pageIndex}-1)*5
+  	]]>
+  </select>
+  <!-- 查询父id和父类别 -->
+  <select id="selectCategoryNews" resultMap="FatherCategory" >
+  	<![CDATA[
+  		select distinct f.id as id,f.category as category
+       from t_goodscategory f right join t_goodscategory s on f.id=s.parentid
+       where f.id<>0
+  	]]>
+  </select>
+  <!-- 根据父id查询子类别 -->
+  <select id="selectSonCategoryByid" parameterType="java.lang.Integer" resultMap="SonCategory">
+  	select id,category
+    from t_goodscategory
+    where parentid=#{id}  
+  </select>
+  
+ <select id="selectCategoryByParentId" resultMap="SonCategory" parameterType="java.lang.Integer">
+  	select id,category
+  	from
+  	t_goodscategory
+  	where parentid=#{id}
+  </select> 
+  <select id="selecTwoCategory" resultMap="TwoCategory">
+  	<![CDATA[select s.id,
+  	s.category,
+  	f.id as parentId,
+  	f.category as parentCategory
+    from t_goodscategory s left join t_goodscategory f on (s.parentid=f.id)
+    where f.id<>0
+	]]>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_GOODSCATEGORY
+    where ID = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from T_GOODSCATEGORY
+    where ID = #{id,jdbcType=DECIMAL}
+  </delete>
+  <insert id="insert" parameterType="com.entity.Category" >
+    insert into T_GOODSCATEGORY (ID, CATEGORY, PARENTID, 
+      STORE)
+    values (#{id,jdbcType=DECIMAL}, #{category,jdbcType=VARCHAR}, #{parentid,jdbcType=DECIMAL}, 
+      #{store,jdbcType=DECIMAL})
+      <selectKey resultType="java.lang.Short" keyProperty="id" order="BEFORE">
+      	select category_seq.nextval from dual
+      </selectKey>
+  </insert>
+  <insert id="insertSelective" parameterType="com.entity.Category" >
+    insert into T_GOODSCATEGORY
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        ID,
+      </if>
+      <if test="category != null" >
+        CATEGORY,
+      </if>
+      <if test="parentid != null" >
+        PARENTID,
+      </if>
+      <if test="store != null" >
+        STORE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=DECIMAL},
+      </if>
+      <if test="category != null" >
+        #{category,jdbcType=VARCHAR},
+      </if>
+      <if test="parentid != null" >
+        #{parentid,jdbcType=DECIMAL},
+      </if>
+      <if test="store != null" >
+        #{store,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.entity.Category" >
+    update T_GOODSCATEGORY
+    <set >
+      <if test="category != null" >
+        CATEGORY = #{category,jdbcType=VARCHAR},
+      </if>
+      <if test="parentid != null" >
+        PARENTID = #{parentid,jdbcType=DECIMAL},
+      </if>
+      <if test="store != null" >
+        STORE = #{store,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=DECIMAL}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.entity.Category" >
+    update T_GOODSCATEGORY
+    set CATEGORY = #{category,jdbcType=VARCHAR},
+      PARENTID = #{parentid,jdbcType=DECIMAL},
+      STORE = #{store,jdbcType=DECIMAL}
+    where ID = #{id,jdbcType=DECIMAL}
+  </update>
+</mapper>

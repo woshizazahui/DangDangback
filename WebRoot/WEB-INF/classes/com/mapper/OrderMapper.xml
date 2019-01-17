@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dao.OrderMapper" >
+  <resultMap id="BaseResultMap" type="com.entity.Order" >
+    <id column="ID" property="id" jdbcType="DECIMAL" />
+    <result column="ORDERID" property="orderid" jdbcType="VARCHAR"/>
+    <result column="PRICE" property="price" jdbcType="DECIMAL" />
+    <result column="CREATETIME" property="createtime" jdbcType="TIMESTAMP" />
+    <result column="USERID" property="userid" jdbcType="DECIMAL" />
+    <result column="ADDRESSID" property="addressid" jdbcType="DECIMAL" />
+    <result column="ORDERSTAUS" property="orderstaus" jdbcType="VARCHAR" />
+    <collection column="userid" property="user" select="com.dao.UserMapper.selectByPrimaryKey"/>
+    <collection column="addressid" property="address" select="com.dao.AddressMapper.selectByPrimaryKey"/>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID, ORDERID,PRICE, CREATETIME, USERID, ADDRESSID, ORDERSTAUS
+  </sql>
+  <select id="selectByOrderId" resultMap="BaseResultMap" parameterType="java.lang.String">
+  	select
+  	<include refid="Base_Column_List"/>
+  	from T_ORDER
+  	where orderid=#{orderid}
+  </select>
+  <select id="selectAllOrders" resultMap="BaseResultMap">
+  	select
+  	<include refid="Base_Column_List"/>
+  	from T_ORDER
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Short" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_ORDER
+    where ID = #{id,jdbcType=DECIMAL}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from T_ORDER
+    where ID = #{id,jdbcType=DECIMAL}
+  </delete>
+  <insert id="insert" parameterType="com.entity.Order" >
+    insert into T_ORDER (ID, PRICE, CREATETIME, 
+      USERID, ADDRESSID, ORDERSTAUS
+      )
+    values (#{id,jdbcType=DECIMAL}, #{price,jdbcType=DECIMAL}, #{createtime,jdbcType=TIMESTAMP}, 
+      #{userid,jdbcType=DECIMAL}, #{addressid,jdbcType=DECIMAL}, #{orderstaus,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.entity.Order" >
+    insert into T_ORDER
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        ID,
+      </if>
+      <if test="price != null" >
+        PRICE,
+      </if>
+      <if test="createtime != null" >
+        CREATETIME,
+      </if>
+      <if test="userid != null" >
+        USERID,
+      </if>
+      <if test="addressid != null" >
+        ADDRESSID,
+      </if>
+      <if test="orderstaus != null" >
+        ORDERSTAUS,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=DECIMAL},
+      </if>
+      <if test="price != null" >
+        #{price,jdbcType=DECIMAL},
+      </if>
+      <if test="createtime != null" >
+        #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="userid != null" >
+        #{userid,jdbcType=DECIMAL},
+      </if>
+      <if test="addressid != null" >
+        #{addressid,jdbcType=DECIMAL},
+      </if>
+      <if test="orderstaus != null" >
+        #{orderstaus,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.entity.Order" >
+    update T_ORDER
+    <set >
+      <if test="price != null" >
+        PRICE = #{price,jdbcType=DECIMAL},
+      </if>
+      <if test="createtime != null" >
+        CREATETIME = #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="userid != null" >
+        USERID = #{userid,jdbcType=DECIMAL},
+      </if>
+      <if test="addressid != null" >
+        ADDRESSID = #{addressid,jdbcType=DECIMAL},
+      </if>
+      <if test="orderstaus != null" >
+        ORDERSTAUS = #{orderstaus,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=DECIMAL}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.entity.Order" >
+    update T_ORDER
+    set PRICE = #{price,jdbcType=DECIMAL},
+      CREATETIME = #{createtime,jdbcType=TIMESTAMP},
+      USERID = #{userid,jdbcType=DECIMAL},
+      ADDRESSID = #{addressid,jdbcType=DECIMAL},
+      ORDERSTAUS = #{orderstaus,jdbcType=VARCHAR}
+    where ID = #{id,jdbcType=DECIMAL}
+  </update>
+</mapper>
